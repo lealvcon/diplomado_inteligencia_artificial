@@ -1,6 +1,9 @@
 from bandits.Bandit import Bandit
 from bandits.probability_distributions.GaussDistribution import \
     GaussDistribution
+from bandits.probability_distributions.BernoulliDistribution import \
+    BernoulliDistribution
+
 from tqdm import tqdm
 import random
 import numpy as np
@@ -12,7 +15,8 @@ num_runs = 6000
 num_steps = 2000
 epsilon = 0.09
 gaussian = GaussDistribution(num_arms)
-bandit = Bandit(num_arms, epsilon, gaussian)
+bernoulli = BernoulliDistribution(num_arms)
+bandit = Bandit(num_arms, epsilon, bernoulli)
 
 count = 0
 
