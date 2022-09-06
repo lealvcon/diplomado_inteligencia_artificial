@@ -16,7 +16,7 @@ num_steps = 2000
 epsilon = 0.09
 gaussian = GaussDistribution(num_arms)
 bernoulli = BernoulliDistribution(num_arms)
-bandit = Bandit(num_arms, epsilon, bernoulli)
+bandit = Bandit(num_arms, epsilon, bernoulli, 5)
 
 count = 0
 

@@ -29,10 +29,12 @@ class Bandit:
     actions values with certainty.
     """
 
-    def __init__(self, number_of_arms, epsilon, probability_dist):
+    def __init__(self, number_of_arms, epsilon, probability_dist,
+                 optimistic_initial_value=0):
         self.__number_of_arms = number_of_arms
         self.__epsilon = epsilon
         self.__probability_dist = probability_dist
+        self.__optimistic_initial_value = optimistic_initial_value
         # Estimated value `Qt(a)`
         self.Q = np.zeros(self.__number_of_arms)
         # Number of times each arm is selected
@@ -57,15 +59,12 @@ class Bandit:
         return self.__probability_dist
 
     def __set_mean_values(self):
-        # self.mean_values = [
-        #     random.gauss(0, 1) for _ in range(self.get_number_of_arms())
-        # ]
         self.__mean_values = \
             self.probability_distribution().set_mean_values()
         self.__q_star_action = np.argmax(self.__mean_values)
 
     def clear_bandit_state(self):
-        self.Q[:] = 0
+        self.Q[:] = 0 + self.__optimistic_initial_value
         self.N[:] = 0
 
     def __pull_lever(self, action):
