@@ -1,4 +1,5 @@
 from bandits.Bandit import Bandit
+from bandits.UCBBandit import UCBBandit
 from bandits.probability_distributions.GaussDistribution import \
     GaussDistribution
 from bandits.probability_distributions.BernoulliDistribution import \
@@ -14,9 +15,13 @@ num_arms = 10
 num_runs = 6000
 num_steps = 2000
 epsilon = 0.09
+optimistic_initial_values = 5
 gaussian = GaussDistribution(num_arms)
 bernoulli = BernoulliDistribution(num_arms)
-bandit = Bandit(num_arms, epsilon, bernoulli, 5)
+# bandit = Bandit(num_arms, epsilon, bernoulli, optimistic_initial_values)
+confidence_level = 2
+bandit = UCBBandit(num_arms, epsilon, gaussian, confidence_level,
+                   optimistic_initial_values)
 
 count = 0
 
