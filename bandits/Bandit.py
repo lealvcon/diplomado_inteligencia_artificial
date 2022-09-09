@@ -29,10 +29,12 @@ class Bandit:
     actions values with certainty.
     """
 
-    def __init__(self, number_of_arms, epsilon, probability_dist):
+    def __init__(self, number_of_arms, epsilon, probability_dist,
+                 optimistic_initial_value=0):
         self.__number_of_arms = number_of_arms
         self.__epsilon = epsilon
         self.__probability_dist = probability_dist
+        self.__optimistic_initial_value = optimistic_initial_value
         # Estimated value `Qt(a)`
         self.Q = np.zeros(self.__number_of_arms)
         # Number of times each arm is selected
@@ -57,18 +59,15 @@ class Bandit:
         return self.__probability_dist
 
     def __set_mean_values(self):
-        # self.mean_values = [
-        #     random.gauss(0, 1) for _ in range(self.get_number_of_arms())
-        # ]
         self.__mean_values = \
             self.probability_distribution().set_mean_values()
         self.__q_star_action = np.argmax(self.__mean_values)
 
     def clear_bandit_state(self):
-        self.Q[:] = 0
+        self.Q[:] = 0 + self.__optimistic_initial_value
         self.N[:] = 0
 
-    def __pull_lever(self, action):
+    def _pull_lever(self, action):
         mean_reward = self.get_mean_values()[action]
         return self.probability_distribution().get_value(mean_reward)
 
@@ -106,20 +105,20 @@ class Bandit:
         from among all the actions with equal probability (explore)
 
         """
-        return self.__argmax() if self.__is_greedy() else \
-            self.__explore_actions()
+        return self.__argmax() if self._is_greedy() else \
+            self._explore_actions()
 
-    def __is_greedy(self):
+    def _is_greedy(self):
         """
         Calculates the probability of taking a greedy action, given that the
         probability of exploring is `epsilon` (random < epsilon)
         """
         return np.random.random() >= self.get_epsilon()
 
-    def __explore_actions(self):
+    def _explore_actions(self):
         return np.random.randint(self.get_number_of_arms())
 
-    def __update_experiment(self, action, reward):
+    def _update_experiment(self, action, reward):
         self.N[action] = self.N[action] + 1
         self.Q[action] = \
             self.Q[action] + 1/self.N[action] * (reward - self.Q[action])
@@ -134,8 +133,8 @@ class Bandit:
                 best_action.append(1)
             else:
                 best_action.append(0)
-            reward = self.__pull_lever(action)
+            reward = self._pull_lever(action)
             actions.append(action)
             rewards.append(reward)
-            self.__update_experiment(action, reward)
+            self._update_experiment(action, reward)
         return actions, rewards, best_action
